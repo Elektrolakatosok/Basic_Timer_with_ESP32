@@ -6,49 +6,48 @@
 #include <Arduino.h>
 #include <RotaryEncoder.h>
 
-#define serialDebug
+//#define serialDebug
 
 //Interrupt variables----------------------------------------------------------
-//volatile int interruptCounter;
 int totalInterruptCounter;
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 //------------------------------------------------------------------------------
 //pin definitions
-const int latchPin  = 13;  // Latch pin of 74HC595 is connected to Digital pin 6
-const int clockPin  = 15;  // Clock pin of 74HC595 is connected to Digital pin 7
-const int dataPin   = 14;  // Data pin of 74HC595 is connected to Digital pin 5
+const int latchPin  = 13;  // Latch pin of 74HC595 is connected to Digital pin 13
+const int clockPin  = 15;  // Clock pin of 74HC595 is connected to Digital pin 15
+const int dataPin   = 14;  // Data  pin of 74HC595 is connected to Digital pin 14
 const int PIN_IN1   = 25;
 const int PIN_IN2   = 26;
 const int buttonPin = 27;
 const int outputPin = 33;
 
 //bytes
-byte leds = 0;    // Variable to hold the pattern of which LEDs are currently turned on or off
+byte leds  = 0;    // Variable to hold the pattern of which LEDs are currently turned on or off
 byte digit = 0;
 
 //timer variables
 volatile int secEllapsed = 0;
-int i = 0;
-int countToSec = 0;
-int OrigcountToSec = 100;
-volatile bool isRunning = false;
-bool doneCount = false;
-int incraseSec = 10;
-int hardcodeddefault = 100;
+int i                    = 0;
+int countToSec           = 0;
+int OrigcountToSec       = 100;
+volatile bool isRunning  = false;
+bool doneCount           = false;
+int incraseSec           = 10;
+int hardcodeddefault     = 100;
 
 //button manage
-unsigned long lastpressed = 0;
+unsigned long lastpressed     = 0;
 unsigned long lastfelengedett = 0;
-bool prevPressedState = false;
-bool isHolding = false;
-bool pressedandrelease = false;
+bool prevPressedState         = false;
+bool isHolding                = false;
+bool pressedandrelease        = false;
 
 //show variables
 long showTextSince = 0;
-bool showText = false;
-int showTextFor = 3000;
-bool resetTimer = false;
+bool showText      = false;
+int  showTextFor   = 3000;
+bool resetTimer    = false;
 
 RotaryEncoder *encoder = nullptr;
 
@@ -59,24 +58,10 @@ void checkPosition()
 
 void IRAM_ATTR onTimer() {
   portENTER_CRITICAL_ISR(&timerMux);
-  //interruptCounter++;
 #ifdef serialDebug       
-  Serial.println("sec");
+  Serial.println("Interrupt...");
 #endif
 
-  /*if(isRunning){
-        i++;
-        if(i>=100){
-            secEllapsed++;
-            i = 0;
-#ifdef serialDebug       
-            Serial.println(secEllapsed);
-#endif
-        }
-        if(secEllapsed>=32000){
-            secEllapsed = 0;
-        }
-    }*/
 if(isRunning){
         secEllapsed++;
 #ifdef serialDebug       
@@ -85,8 +70,7 @@ if(isRunning){
         if(secEllapsed>=32000){
             secEllapsed = 0;
         }
-    }
-       
+    }     
   portEXIT_CRITICAL_ISR(&timerMux);
 }
 
@@ -97,9 +81,9 @@ void setup()
     attachInterrupt(digitalPinToInterrupt(PIN_IN1), checkPosition, CHANGE);
     attachInterrupt(digitalPinToInterrupt(PIN_IN2), checkPosition, CHANGE);
         
-    pinMode(latchPin, OUTPUT);
-    pinMode(dataPin, OUTPUT);  
-    pinMode(clockPin, OUTPUT);
+    pinMode(latchPin,  OUTPUT);
+    pinMode(dataPin,   OUTPUT);  
+    pinMode(clockPin,  OUTPUT);
     pinMode(outputPin, OUTPUT);
     pinMode(buttonPin, INPUT_PULLUP);
     
@@ -176,9 +160,10 @@ void loop(){
         lastfelengedett = millis();
         isHolding = false;           
         pressedandrelease = true;         
-        /*
+#ifdef serialDebug
         Serial.print("pressed for:");
-        Serial.println(lastfelengedett-lastpressed);*/
+        Serial.println(lastfelengedett-lastpressed);
+#endif
         }
         
     if(pressedandrelease){
